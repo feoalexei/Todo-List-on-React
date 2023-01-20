@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import TodoList from './TodoList';
 import initialTodos from '../todos.json';
+import TodoList from './TodoList';
+import Container from './Container';
 
 class App extends Component {
   state = {
@@ -13,6 +14,30 @@ class App extends Component {
     }));
   };
 
+  toggleCompleted = todoId => {
+    console.log(todoId);
+
+    // this.setState(prevState => ({
+    //   todos: prevState.todos.map(todo => {
+    //     if (todo.id === todoId) {
+    //       console.log("We've found the needed to do");
+    //       return {
+    //         ...todo,
+    //         completed: !todo.completed,
+    //       };
+    //     }
+
+    //     return todo;
+    //   }),
+    // }));
+
+    this.setState(({ todos }) => ({
+      todos: todos.map(todo =>
+        todo.id === todoId ? { ...todo, completed: !todo.completed } : todo
+      ),
+    }));
+  };
+
   render() {
     const { todos } = this.state;
     const totalTodosCount = todos.length;
@@ -22,14 +47,19 @@ class App extends Component {
     );
 
     return (
-      <>
+      <Container>
         <div>
-          <span>Total number of todos: {totalTodosCount}</span>
+          <p>Total number of todos: {totalTodosCount}</p>
           <br></br>
-          <span>Number of completed todos: {completedTodosCount}</span>
+          <p>Number of completed todos: {completedTodosCount}</p>
         </div>
-        <TodoList todos={todos} onDeleteTodo={this.deleteTodo} />
-      </>
+
+        <TodoList
+          todos={todos}
+          onDeleteTodo={this.deleteTodo}
+          onToggleCompleted={this.toggleCompleted}
+        />
+      </Container>
     );
   }
 }

@@ -1,5 +1,8 @@
 .TodoList {
   width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .TodoList__item {
@@ -12,4 +15,8 @@
 
 .TodoList__text {
   margin: 0 10px 0 0;
+}
+
+.TodoList__item--completed p {
+  text-decoration: line-through;
 }

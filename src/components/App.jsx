@@ -6,13 +6,37 @@ import Container from './Container';
 import TodoEditor from './TodoEditor';
 import Filter from './Filter';
 import Modal from './Modal';
-
+import IconButton from './IconButton';
+import { ReactComponent as AddIcon } from '../icons/add.svg';
 class App extends Component {
   state = {
-    todos: initialTodos,
+    todos: [],
     filter: '',
     showModal: false,
   };
+
+  componentDidMount() {
+    console.log('App componenDidMount');
+    const todos = localStorage.getItem('todos');
+    const parsedTodos = JSON.parse(todos);
+
+    if (parsedTodos) {
+      this.setState({ todos: parsedTodos });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const nextTodos = this.state.todos;
+    const prevTodos = prevState.todos;
+
+    if (nextTodos !== prevTodos) {
+      localStorage.setItem('todos', JSON.stringify(nextTodos));
+    }
+
+    if (nextTodos.length > prevTodos.length && prevTodos.length !== 0) {
+      this.toggleModal();
+    }
+  }
 
   toggleModal = () => {
     this.setState(({ showModal }) => ({
@@ -32,6 +56,8 @@ class App extends Component {
     this.setState(prevState => ({
       todos: [todo, ...prevState.todos],
     }));
+
+    // this.toggleModal();
   };
 
   deleteTodo = todoId => {
@@ -76,25 +102,15 @@ class App extends Component {
 
     return (
       <Container>
-        <button type="button" onClick={this.toggleModal}>
-          Open Modal
-        </button>
+        <IconButton onClick={this.toggleModal} aria-label="add todo">
+          <AddIcon fill="white" />
+        </IconButton>
+
         {showModal && (
           <Modal onClose={this.toggleModal}>
-            <h2>This is a Modal content as children</h2>
-            <p>
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-              Inventore consequuntur dolor quidem aliquam ex non ratione, alias
-              id omnis aliquid provident, deserunt voluptates. Optio placeat,
-              deserunt facilis beatae dolores assumenda rerum, voluptates quia
-              nostrum, nobis cumque inventore et minima necessitatibus?
-            </p>
-            <button type="button" onClick={this.toggleModal}>
-              Close Modal
-            </button>
+            <TodoEditor onSubmit={this.addTodo} />
           </Modal>
         )}
-        <TodoEditor onSubmit={this.addTodo} />
         <Filter value={filter} onChange={this.changeFilter} />
         <div>
           <p>Total todos: {totalTodosCount}</p>
